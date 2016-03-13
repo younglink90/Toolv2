@@ -13,11 +13,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import tdh.tools.xml.Address;
 import tdh.tools.xml.Feed;
+import tdh.tools.xml.LDAP;
 import tdh.tools.xml.Queue;
 import tdh.tools.xml.jaxb.XMLReader;
 
@@ -48,6 +52,10 @@ public class Main extends Application {
 		primaryStage.setScene(new Scene(root, 600, 350));
 		
 		setQueuePurgerValuesIntoNodes();
+		
+		root.getChildren()
+		.filtered(p -> p instanceof ComboBox)
+		.forEach(p -> System.out.println(p));
 
 		primaryStage.show();
 	}
@@ -58,18 +66,19 @@ public class Main extends Application {
 
 		GridPane gridPane = new GridPane();
 		gridPane.setId("gridQueuePurge");
-		gridPane.setVgap(10);
+		gridPane.setVgap(30);
 		gridPane.setHgap(10);
-
+		
+		// ------------- PANEL WITH FEEDS START --------------------
 		Pane paneQueues = new Pane();
 		paneQueues.getStyleClass().add("panelQueuePurger");
 		paneQueues.setMinWidth(500);
 
-		Label myLabel = new Label();
-		myLabel.setId("labelQueuePurger_Queue");
-		myLabel.setText("  Queue to purge  ");
-		myLabel.setLayoutY(-10);
-		myLabel.setLayoutX(10);
+		Label labelQueues = new Label();
+		labelQueues.getStyleClass().add("labelQueuePurger");
+		labelQueues.setText("  Queue to purge  ");
+		labelQueues.setLayoutY(-10);
+		labelQueues.setLayoutX(10);
 
 		ComboBox<Feed> comboFeed = new ComboBox<>();
 		comboFeed.setId("comboboxQueuePurger_Feed");
@@ -81,23 +90,47 @@ public class Main extends Application {
 		comboQueues.setId("comboboxQueuePurger_Queue");
 		comboQueues.setLayoutY(15);
 		comboQueues.setLayoutX(280);
+		
+		paneQueues.getChildren().addAll(labelQueues, comboFeed, comboQueues);
+		// ------------- PANEL WITH FEEDS ENDS --------------------
+		
+		// ------------ PANEL WITH ADDRESS START ------------------
+		Pane paneAddress = new Pane();
+		paneAddress.getStyleClass().add("panelQueuePurger");
+		paneAddress.setMinWidth(500);
+		
+		Label labelLDAP = new Label();
+		labelLDAP.getStyleClass().add("labelQueuePurger");
+		labelLDAP.setText("  Address  ");
+		labelLDAP.setLayoutY(-10);
+		labelLDAP.setLayoutX(10);
 
-		paneQueues.getChildren().addAll(myLabel, comboFeed, comboQueues);
+		ComboBox<LDAP> comboLDAP = new ComboBox<>();
+		comboLDAP.setId("comboboxQueuePurger_LDAP");
+		comboLDAP.setLayoutY(15);
+		comboLDAP.setLayoutX(10);
+
+		ComboBox<Address> comboAddress = new ComboBox<>();
+		comboAddress.setId("comboboxQueuePurger_Address");
+		comboAddress.setLayoutY(15);
+		comboAddress.setLayoutX(280);
+		
+		paneAddress.getChildren().addAll(labelLDAP, comboLDAP, comboAddress);
+		// ------------ PANEL WITH ADDRESS START ------------------
 
 		Button btn = new Button();
 		btn.setText("Purge Queue");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				// TO-DO dfs
-			}
-		});
 		btn.setId("buttonPurgeQueue");
-		btn.setAlignment(Pos.BOTTOM_CENTER);
-
-		gridPane.add(paneQueues, 0, 3);
-		gridPane.add(btn, 0, 4);
+		createActionHandlerQueuePurgerButtonPurge(btn);
+		
+		HBox hbox = new HBox();
+		hbox.setAlignment(Pos.BOTTOM_CENTER);
+		hbox.getChildren().add(btn);
+		
+		gridPane.add(paneQueues, 0, 1);
+		gridPane.add(paneAddress, 0, 3);
+		gridPane.add(hbox, 0, 5);
+		gridPane.setGridLinesVisible(true);
 
 		tab.setContent(gridPane);
 		tab.setClosable(false);
@@ -123,6 +156,16 @@ public class Main extends Application {
 		});
 	}
 	
+	public void createActionHandlerQueuePurgerButtonPurge(Button btn) {
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				System.out.println("Purged!");
+			}
+		});		
+	}
+	
 	public void setQueuePurgerValuesIntoNodes() {
 		ComboBox<Feed> cbQueuePurger_Feed = (ComboBox<Feed>) root.lookup("#comboboxQueuePurger_Feed");
 		cbQueuePurger_Feed.getItems().addAll(XMLReader.getTDHData().getFeedList());
@@ -131,5 +174,9 @@ public class Main extends Application {
 		ComboBox<Queue> cbQueuePurger_Queue = (ComboBox<Queue>) root.lookup("#comboboxQueuePurger_Queue");
 		cbQueuePurger_Queue.getItems().addAll(cbQueuePurger_Feed.getValue().getQueueList());
 		cbQueuePurger_Queue.setValue(cbQueuePurger_Queue.getItems().get(0));
+		
+		ComboBox<LDAP> cbQueuePurger_LDAP = (ComboBox<LDAP>) root.lookup("#comboboxQueuePurger_LDAP");
+		cbQueuePurger_LDAP.getItems().addAll(XMLReader.getTDHData().getUtilities().getLdapList());
+		cbQueuePurger_LDAP.setValue(cbQueuePurger_LDAP.getItems().get(0));
 	}
 }
