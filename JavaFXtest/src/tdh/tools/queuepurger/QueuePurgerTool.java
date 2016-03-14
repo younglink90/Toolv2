@@ -3,6 +3,7 @@ package tdh.tools.queuepurger;
 import com.db.treasury.tdh.QueuePurger;
 
 import tdh.core.Main;
+import tdh.core.QueuePurgerTab;
 import tdh.tools.xml.Address;
 import tdh.tools.xml.Feed;
 import tdh.tools.xml.LDAP;
@@ -37,7 +38,7 @@ public class QueuePurgerTool  {
 	}
         
         public static String run(LDAP ldap, Feed feed, Queue queue, Address address) {
-        	if(queue.equals(Main.ALL_QUEUES)) {
+        	if(queue.equals(QueuePurgerTab.ALL_QUEUES)) {
         		return purgeAllQueues(ldap, feed, address);
         	}
         	
