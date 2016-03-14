@@ -1,2 +1,6 @@
 /bin/
 /Util.xml
+/target/
+/resources/
+/.classpath
+/.project
