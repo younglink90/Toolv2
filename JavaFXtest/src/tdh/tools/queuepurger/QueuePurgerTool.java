@@ -54,7 +54,7 @@ public class QueuePurgerTool  {
             System.setOut(new PrintStream(pipeOut));
             
             try {
-		QueuePurger.main(dataToSend);
+            	QueuePurger.main(dataToSend);
             } catch (NameNotFoundException e) {
                 System.out.println("ERROR: Your Util.xml contains non-existing queues");
             } catch (JMSException ex) {

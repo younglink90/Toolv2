@@ -7,6 +7,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import tdh.tools.xml.Address;
+import tdh.tools.xml.Environment;
 import tdh.tools.xml.Feed;
 import tdh.tools.xml.LDAP;
 import tdh.tools.xml.Queue;
@@ -25,24 +26,26 @@ public class Main extends Application {
 	@Override
 	public void init() {
 		TabPane tabPane = new TabPane();
-		tabPane.getTabs().add(new QueuePurgerTab(root).getTab());
-		tabPane.getTabs().add(new FeedExecutionTab(root).getTab());
-
+		
 		root = new StackPane();
 		root.getChildren().add(tabPane);
 		root.getStylesheets().add(Main.class.getResource("application.css").toExternalForm());
+		
+		tabPane.getTabs().add(new QueuePurgerTab(root).getTab());
+		tabPane.getTabs().add(new FeedExecutionTab(root).getTab());
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		primaryStage.setTitle("Hello World!");
+		primaryStage.setTitle("TDHTool");
 		primaryStage.setScene(new Scene(root, 600, 350));
 		
 		setQueuePurgerValuesIntoNodes();
+		setFeedExecutionValuesIntoNodes();
 		primaryStage.show();
 	}
 	
-	public void setQueuePurgerValuesIntoNodes() {
+	private void setQueuePurgerValuesIntoNodes() {
 		ComboBox<Feed> cbQueuePurger_Feed = (ComboBox<Feed>) root.lookup("#comboboxQueuePurger_Feed");
 		cbQueuePurger_Feed.getItems().addAll(XMLReader.getTDHData().getFeedList());
 		cbQueuePurger_Feed.setValue(cbQueuePurger_Feed.getItems().get(0));
@@ -58,5 +61,15 @@ public class Main extends Application {
 		ComboBox<Address> cbQueuePurger_Address = (ComboBox<Address>) root.lookup("#comboboxQueuePurger_Address");
 		cbQueuePurger_Address.getItems().addAll(cbQueuePurger_LDAP.getValue().getAddressList());
 		cbQueuePurger_Address.setValue(cbQueuePurger_Address.getItems().get(0));		
+	}
+	
+	private void setFeedExecutionValuesIntoNodes() {
+		ComboBox<Feed> cbFeedExecution_Feed = (ComboBox<Feed>) root.lookup("#comboboxFeedExecution_Feed");
+		cbFeedExecution_Feed.getItems().addAll(XMLReader.getTDHData().getFeedList());
+		cbFeedExecution_Feed.setValue(cbFeedExecution_Feed.getItems().get(0));
+
+		ComboBox<Environment> cbFeedExecution_Environment = (ComboBox<Environment>) root.lookup("#comboboxFeedExecution_Environment");
+		cbFeedExecution_Environment.getItems().addAll(XMLReader.getTDHData().getUtilities().getEnvironmentList());
+		cbFeedExecution_Environment.setValue(cbFeedExecution_Environment.getItems().get(0));		
 	}
 }
